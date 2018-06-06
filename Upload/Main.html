@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Marble</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <meta name="viewport" content="width=device-width">
+
+    <style>
+
+        #Logo {
+            position: absolute;
+            top: -115px;
+            left: 0px;
+
+        }
+
+        #Box {
+            position: absolute;
+            top: 5px;
+            right: 329px;
+        }
+
+        #Deling {
+            border: solid;
+            border: #030200;
+        }
+
+    </style>
+
+    <script>
+        // Picture element HTML5 shiv
+        document.createElement( "picture" );
+    </script>
+    <script src="https://cdn.rawgit.com/scottjehl/picturefill/master/dist/picturefill.min.js" async></script>
+</head>
+
+<body>
+
+<header>
+    <div class="wrapper">
+        <h1 class="logo">Marble</h1>
+        <nav>
+            <h2>Main Navigation</h2>
+            <div id="burger-nav"></div>
+            <ul>
+                <li><a href="" class="current">Home</a></li>
+                <li><a href="">About</a></li>
+                <li><a href="" id = Deling>Share</a></li>
+                <li><a href="">Service</a></li>
+                <li><a href="">Features</a></li>
+                <li><a href="">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+    </picture>
+</div>
+
+<main class="wrapper">
+
+    <section id="selling-points">
+
+        <ul>
+            <li>
+                <img src="56b3b7f376e6e283ca312ab3d5dbb96e.jpg" alt="selling point">
+                <h3>Animal Pictures</h3>
+                <p>Breathtaking pictures of animals have been central in the newer years of advanced cameras. You can never go wrong on these beauties.</p>
+            </li>
+            <li>
+                <img src="dca3441c60d88cb944f2552294973e22.jpg" alt="selling point">
+                <h3>In Doors Pictures</h3>
+                <p>Most freelance creative photographers take to the outside for their pictures but some of the most creative photos happen inside.</p>
+            </li>
+            <li>
+                <img src="3c978022e5cfdf88c604e3ab35196ac9--paint-my-photo.jpg" alt="selling point">
+                <h3>Night Time</h3>
+                <p>One of the most popular sorts of photos in newer times with great lighting features, night time photos bring some of the most amazing colorful pictures.</p>
+            </li>
+            <li>
+                <img src="79e730379796c5bb27f341050b7162bc--paint-my-photo-sydney.jpg" alt="selling point">
+                <h3>Day Time</h3>
+                <p>No matter if it's rain or sun the bright day will always be a time for creative artists to take impressive photos.</p>
+            </li>
+        </ul>
+
+    </section>
+
+    <section id="latest-work">
+        <h2>How the site works</h3>
+            <ul>
+                <li>
+                    <h3>Upload a picture!</h3>
+                    <p>Share a photograph you have taken and give it a good title. You can find it at the bottom of the page.</p>
+                </li>
+                <li>
+                    <h3>Have us review it</h3>
+                    <p>We will take a look at the best picture being uploaded and showcase the best ones here!</p>
+                </li>
+                <li>
+                    <h3>Take a look at other peoples pictures</h3>
+                    <p>Take inspiration from the gems we recieve here on this page.</p>
+                </li>
+            </ul>
+    </section>
+
+</main>
+
+<div id="quote">
+    <blockquote>A picture is a poem without words</blockquote>
+</div>
+
+<main>
+
+
+    <a href="index.html">
+        <img src="home.png" id="Hjemknapp">
+    </a>
+
+    <form id="skjema">
+        <input type="file" id="inpFil" class="button" required>
+        <input type="tekst" id="inpBildetekst" required placeholder="Title of picture">
+        <button class="button" type="submit">OK</button>
+    </form>
+    <section id="alleBildene"></section>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBTTpRFGh70rWGPmwNhfUjF_ziWpdAhn-c",
+            authDomain: "erlend-it.firebaseapp.com",
+            databaseURL: "https://erlend-it.firebaseio.com",
+            projectId: "erlend-it",
+            storageBucket: "erlend-it.appspot.com",
+            messagingSenderId: "287130219791"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <script>
+        //Setter opp Firebase med datbase og storage
+        let database = firebase.database(); //Lagring av data om bilder
+        let storage = firebase.storage(); //Lagring av bilder
+        let bildedata = database.ref("bilder"); //Hvor vi lagrer data om bildene
+        let skjema = document.getElementById("skjema");
+        let inpBildetekst = document.getElementById("inpBildetekst");
+        let inpFile = document.getElementById("inpFile");
+        let alleBildene = document.getElementById("alleBildene");
+
+        function lagreData(snapshot) {
+            let bildeURL = snapshot.downloadURL; // URL hvor vi finner bildet
+            let bildetekst = inpBildetekst.value; // Beskrivelse av bildet
+            let bildeinfo = {
+                "url": bildeURL,
+                "tekst": bildetekst,
+                "user" : "DEN SOM ER LOGGET INN",
+                "time" : firebase.database.ServerValue.TIMESTAMP
+            };
+            bildedata.push(bildeinfo);
+
+            alleBildene.innerHTML = "Gratulerer! Du har nå lastet opp et nytt bilde";
+            skjema.reset();
+
+            setTimeout(function() {
+                alleBildene.innerHTML = "";
+            }, 3000);
+
+        }
+
+        function lastOppBilde(evt) {
+            evt.preventDefault();
+
+            let fil = inpFil.files[0]; //filen som er valgt
+            let lagringsplass = storage.ref("bilder/"+new Date()); //Får et unikt filnavn
+            lagringsplass.put(fil).then(lagreData); //Passer på å ikke lagre data før bildet er lagret
+        }
+        function visAlleBildene(snapshot){
+            let bildedata = snapshot.val();
+            alleBildene.innerHTML = `<article>
+            <img src="${bildedata.url}">
+            <p>${bildedata.tekst}</p>
+        </article>
+    <hr>` + alleBildene.innerHTML;
+        }
+        // Legger til kode som sørger for å starte funksjonen når brukeren velger bilde
+        skjema.addEventListener("submit",lastOppBilde);
+        //bildedata.on("child_added", visAlleBildene); // Viser bildene som legges til
+        visAlleBildene
+            .orderByChild("time")
+            .limitToLast(1)
+    </script>
+
+</main>
+
+
+
+<img src="400_13.gif" height="350" width="350" id = Logo>
+
+
+</body>
+
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<script src="menu.js"></script>
+
+</html>
