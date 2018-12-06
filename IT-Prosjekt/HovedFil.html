@@ -6,10 +6,41 @@
         canvas {
             border:1px solid #d3d3d3;
             background-image: url(../IT-Prosjekt/background-2719572_960_720.jpg);
+            top: 150px;
+            right: 330px;
+            position: absolute;
         }
+        h1{
+            color: #9C27B0;
+            text-shadow: 2px 2px 2px black;
+            text-transform: uppercase;
+            font-family: "Trebuchet MS";
+            font-size: 100px;
+            position: absolute;
+            top: -50px;
+            right: 510px;
+        }
+        body {
+            background: #1a1a1a;
+        }
+        p {
+            color: white;
+            font-size: 20px;
+        }
+
     </style>
 </head>
 <body onload="startGame()">
+
+<h1>Unikon</h1>
+
+<audio autoplay>
+    <iframe src="silent-ringtone.mp3.mp3" allow="autoplay" id="audio" style="display:none"></iframe>
+    <audio id="player" autoplay loop>
+        <source src="Kommisar%20-%20Springtime.mp3" type="audio/mp3">
+    </audio>
+</audio>
+
 <script>
 
     var myGamePiece;
@@ -72,7 +103,14 @@
                 this.y = rockbottom;
                 this.gravitySpeed = 0;
             }
-        }
+        };
+        this.hitTop = function() {
+            var rocktop = myGameArea.canvas.height;
+            if (this.y > rocktop) {
+                this.y = rocktop;
+                this.gravitySpeed = 0;
+            }
+        };
         this.crashWith = function(otherobj) {
             var myleft = this.x;
             var myright = this.x + (this.width);
@@ -94,7 +132,7 @@
         var x, height, gap, minHeight, maxHeight, minGap, maxGap;
         for (i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
-                return;
+                return location.reload();
             }
         }
         myGameArea.clear();
@@ -130,7 +168,7 @@
     }
 </script>
 <br>
-<button onkeydown="accelerate(-0.15)" onkeyup="accelerate(0.035)" autofocus>Akslerer</button>
+<button onkeydown="accelerate(-0.06)" onkeyup="accelerate(0.015)" autofocus>Akslerer</button>
 <p>Ikke kom i kontakt med hindrene</p>
 <p>Hvor lenge kan du holde deg i live?</p>
 </body>
