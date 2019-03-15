@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Spill</title>
+    <style>
+        body {
+            background-image: url("sky.jpg");
+            background-size: cover;
+        }
+        canvas {
+            background-image: url("Bakgrunnsbilde2.JPG");
+            display: block;
+            margin: 0 auto;
+            top: 100px;
+            position: absolute;
+            right: 310px;
+
+        }
+        h1 {
+            position: absolute;
+            font-family: fantasy;
+            color: black;
+            right: 528px;
+            top: -40px;
+            font-size: 75px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>SpillTittel</h1>
+
+<canvas id = "minCanvas" width="771" height="515"></canvas>
+
+<script>
+
+    const minCanvas = document.getElementById("minCanvas");
+    const ctx = minCanvas.getContext("2d");
+    let x = minCanvas.width/2;
+    let y = minCanvas.height-30;
+    let xx = 4;
+    let yy = -4;
+    let ballRadius = 17;
+    var platformHoyde = 10;
+    var platformBredde = 90;
+    var platformX = (minCanvas.width-platformBredde)/2;
+    var hoyre = false; // knapper man trykkes kan brukes som en boolean, setter de som standard til false til noe blir gjort med dem
+    var venstre = false;
+    document.addEventListener("keydown", keyDown, false); //Gjør så funksjonene vil skje når jeg trykker på knappene.
+    document.addEventListener("keyup", keyUp, false);
+
+    // variablene endres ved hjelp av disse funksjonene basert på trykk fra den som spiller, her gjøres boolean om til true.
+    // Dette blir ved hjelp av senere kode brukt til å flytte platformen.
+    function keyDown(e) {
+        if(e.keyCode == 39) {
+            hoyre = true;
+        }
+        else if(e.keyCode == 37) {
+            venstre = true;
+        }
+    }
+    function keyUp(e) {
+        if(e.keyCode == 39) {
+            hoyre = false;
+        }
+        else if(e.keyCode == 37) {
+            venstre = false;
+        }
+    }
+
+        // Skaper ballen i spillet
+    function ball() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+        // Skaper platformen, har variabler som tilslier størelse, bruker ctx.rect for å skape en rektangelformet platform.
+    function platform() {
+        ctx.beginPath();
+        ctx.rect(platformX, minCanvas.height-platformHoyde, platformBredde, platformHoyde);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+        // Funksjon for å sjekke når radiusen til ballen koliderer med canvasen.
+    function sjekkKollisjon(ball) {
+        if(x + xx > minCanvas.width-ballRadius || x + xx < ballRadius) {
+            xx = -xx;
+        }
+        if(y + yy > minCanvas.height-ballRadius || y + yy < ballRadius) {
+            yy = -yy;
+        }
+    }
+            // Dette er funksjonen som responderer til når hoyre eller venste blir om til true,
+             // har også lagt inn kode så den ikke kan gå ut av canvasen.
+    function bevegPlatform() {
+        if(hoyre && platformX < minCanvas.width-platformBredde) {
+            platformX += 7;
+        }
+        else if(venstre && platformX > 0) {
+            platformX -= 7;
+        }
+    }
+
+    // Koden fungerer slik at den skaper en ny sirkel på hvert frame,
+    // clearRect brukes til å fjerne sirklene som ligger igjen. Etter det kaller jeg funksjonene for spillet,
+    // x + xx og y + yy gjør at ballen beveger seg, jeg kan endre på hvor mye basert på hva jeg setter xx og yy til.
+    function gameLoop() {
+        ctx.clearRect(0, 0, minCanvas.width, minCanvas.height);
+        ball();
+        platform();
+        sjekkKollisjon();
+        bevegPlatform();
+        x += xx;
+        y += yy;
+
+    }
+
+    setInterval(gameLoop, 10);
+
+</script>
+
+</body>
+</html>
