@@ -40,15 +40,20 @@
     let x = minCanvas.width/2;
     let y = minCanvas.height-30;
     let xx = 4;
-    let yy = -4;
+    let yy = -5;
     let ballRadius = 17;
-    var platformHoyde = 10;
-    var platformBredde = 90;
-    var platformX = (minCanvas.width-platformBredde)/2;
-    var hoyre = false; // knapper man trykkes kan brukes som en boolean, setter de som standard til false til noe blir gjort med dem
-    var venstre = false;
-    document.addEventListener("keydown", keyDown, false); //Gjør så funksjonene vil skje når jeg trykker på knappene.
-    document.addEventListener("keyup", keyUp, false);
+    let platformHoyde = 10;
+    let platformBredde = 90;
+    let platformX = (minCanvas.width-platformBredde)/2;
+    let hoyre = false; // knapper man trykkes kan brukes som en boolean, setter de som standard til false til noe blir gjort med dem
+    let venstre = false;
+    let HinderRader = 3;
+    let Hinderkolonner = 8;
+    let HinderWidth = 75;
+    let HinderHeight = 20;
+    let HinderPadding = 10;
+    let HinderTop = 30;
+    let HinderLeft = 30;
 
     // variablene endres ved hjelp av disse funksjonene basert på trykk fra den som spiller, her gjøres boolean om til true.
     // Dette blir ved hjelp av senere kode brukt til å flytte platformen.
@@ -69,6 +74,17 @@
         }
     }
 
+    let hinder = [];
+    for(let i=0; i<Hinderkolonner; i++) {
+        hinder[i] = [];
+        for(let r=0; r<HinderRader; r++) {
+            hinder[i][r] = { x: 0, y: 0 };
+        }
+    }
+
+    document.addEventListener("keydown", keyDown, false); //Gjør så funksjonene vil skje når jeg trykker på opp og ned knappene.
+    document.addEventListener("keyup", keyUp, false);
+
         // Skaper ballen i spillet
     function ball() {
         ctx.beginPath();
@@ -81,45 +97,77 @@
     function platform() {
         ctx.beginPath();
         ctx.rect(platformX, minCanvas.height-platformHoyde, platformBredde, platformHoyde);
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = "#009";
         ctx.fill();
         ctx.closePath();
     }
         // Funksjon for å sjekke når radiusen til ballen koliderer med canvasen.
     function sjekkKollisjon(ball) {
-        if(x + xx > minCanvas.width-ballRadius || x + xx < ballRadius) {
+        if (x + xx > minCanvas.width - ballRadius || x + xx < ballRadius) {
             xx = -xx;
         }
-        if(y + yy > minCanvas.height-ballRadius || y + yy < ballRadius) {
+        if (y + yy < ballRadius) {
             yy = -yy;
+        }
+        else if (y + yy > minCanvas.height - ballRadius) {
+            if (x > platformX && x < platformX + platformBredde) {
+                if (y = y - platformHoyde) {
+                    yy = -yy;
+                }
+            }
+            else {
+                alert("GAME OVER");
+                document.location.reload();
+                clearInterval(interval); // For at chrome skal kunne avslutte spillet.
+            }
         }
     }
             // Dette er funksjonen som responderer til når hoyre eller venste blir om til true,
              // har også lagt inn kode så den ikke kan gå ut av canvasen.
     function bevegPlatform() {
         if(hoyre && platformX < minCanvas.width-platformBredde) {
-            platformX += 7;
+            platformX += 8;
         }
         else if(venstre && platformX > 0) {
-            platformX -= 7;
+            platformX -= 8;
         }
     }
+    function skapHinder() { // ctx brukes til å skape rektanglene som fungerer som hinder, variablene over brukes til å bestemme størelse
+                            // og hvor mange rader og kolonner det skal være. For løkkene fungerer som metoden for å bruke variablene her.
+        for(let i=0; i<Hinderkolonner; i++) {
+            for(let r=0; r<HinderRader; r++) {
+                let HinderX = (i*(HinderWidth+HinderPadding))+HinderLeft;
+                let HinderY = (r*(HinderHeight+HinderPadding))+HinderTop;
+                hinder[i][r].x = HinderX;
+                hinder[i][r].y = HinderY;
+                ctx.beginPath();
+                ctx.rect(HinderX, HinderY, HinderWidth, HinderHeight);
+                ctx.fillStyle = "#9DD";
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+    }
+
+
 
     // Koden fungerer slik at den skaper en ny sirkel på hvert frame,
     // clearRect brukes til å fjerne sirklene som ligger igjen. Etter det kaller jeg funksjonene for spillet,
     // x + xx og y + yy gjør at ballen beveger seg, jeg kan endre på hvor mye basert på hva jeg setter xx og yy til.
     function gameLoop() {
         ctx.clearRect(0, 0, minCanvas.width, minCanvas.height);
+        skapHinder();
         ball();
         platform();
-        sjekkKollisjon();
         bevegPlatform();
+        sjekkKollisjon();
+
         x += xx;
         y += yy;
-
     }
 
-    setInterval(gameLoop, 10);
+
+    var interval = setInterval(gameLoop, 10); // setter i gang gameloop funksjonen
 
 </script>
 
